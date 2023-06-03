@@ -96,7 +96,7 @@ def get_note(address, *args):
     print("press-1", press-1)
 
     if press!=0:
-        client.send_message(str(list_note[press-1]), "None")
+        client.send_message("/send_note_to_ableton", list_note[press-1])
 
 if __name__ == "__main__":
     # Adresse IP et port sur lesquels écouter les messages OSC
