@@ -43,6 +43,7 @@ class App:
 
         # Création du dispatcher et ajout de la fonction de traitement
         self.dp = dispatcher.Dispatcher()
+        self.dp.map("/reservoir/reset_reservoir", self.reset_reservoir)
         self.dp.map("/reservoir/set_reservoir_parameter", self.set_reservoir_parameter)
         self.dp.map("/reservoir/update_note", self.update_note)
         self.dp.map("/reservoir/get_note", self.get_note)
@@ -60,6 +61,11 @@ class App:
 
 
     @process_ableton_message
+    def reset_reservoir(self, address, *args):
+        print("Resetting reservoir")
+        self.create_reservoir_model()
+
+    @process_ableton_message
     def set_reservoir_parameter(self, address, *args):
         key = args[0]
         value = args[1]
@@ -73,7 +79,9 @@ class App:
         if key == "units":
             # if the user wants to change the number of neurons, we have no choice but recreating the reservoir
             self.create_reservoir_model()
-
+            print("Creating new reservoir with", value, "neurons")
+        elif key == "sr":
+            print("WARNING: can't change spectral radius yet")
         else:
             self.reservoir_model.reservoir.set_param(key, value)
 
