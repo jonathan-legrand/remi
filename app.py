@@ -43,7 +43,7 @@ class App:
 
         # Création du dispatcher et ajout de la fonction de traitement
         self.dp = dispatcher.Dispatcher()
-        self.dp.map("/reservoir/set_reservoir", self.set_reservoir)
+        self.dp.map("/reservoir/set_reservoir_parameter", self.set_reservoir_parameter)
         self.dp.map("/reservoir/update_note", self.update_note)
         self.dp.map("/reservoir/get_note", self.get_note)
 
@@ -60,18 +60,22 @@ class App:
 
 
     @process_ableton_message
-    def set_reservoir(self, address, *args):
+    def set_reservoir_parameter(self, address, *args):
         key = args[0]
         value = args[1]
         # Faire quelque chose avec les paramètres reçus
         print(f"key : {key}")
         print(f"Value: {value}")
+
+        # update the value in param dictionary
+        self.reservoir_params[key] = value
+
         if key == "units":
-            reservoir, w_in = rsv.create_model(value)
+            # if the user wants to change the number of neurons, we have no choice but recreating the reservoir
+            self.create_reservoir_model()
 
         else:
-            param[key] = value
-            reservoir.set_param(key, value)
+            self.reservoir_model.reservoir.set_param(key, value)
 
 
     @process_ableton_message
