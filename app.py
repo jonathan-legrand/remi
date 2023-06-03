@@ -34,12 +34,14 @@ class App:
             "units": 100,
             "lr": 1.0,
             "sr": 1.0,
-            "input_scaling": 0.0,
+            "input_scaling": 1.0,
             "noise_rc": 0.0,
             "noise_in": 0.0,
         }
 
         self.create_reservoir_model()
+
+        print(self.reservoir_model.reservoir.input_scaling)
 
         # Création du dispatcher et ajout de la fonction de traitement
         self.dp = dispatcher.Dispatcher()
