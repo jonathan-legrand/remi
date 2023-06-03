@@ -1,8 +1,11 @@
 from pythonosc import dispatcher
 from pythonosc import osc_server
 from pythonosc import udp_client
-import reservoir.py as rsv
+import reservoir as rsv
 
+from scipy.special import softmax
+
+import numpy as np
 # Adresse IP et port du client "send.py"
 send_ip = "127.0.0.1"
 send_port = 8000
@@ -12,7 +15,18 @@ client = udp_client.SimpleUDPClient(send_ip, send_port)
 
 note_set = set()
 param = {}
-reservoir, W_in = rsv.create_model(100)
+
+def set_up():
+    reservoir, W_in = rsv.create_model(100)
+    states = np.zeros((10000, 20))
+    to_press = np.zeros((1000, 9))
+
+    return reservoir, W_in, states, to_press
+
+
+reservoir, w_in, states, to_press = set_up()
+
+i = 0 
 
 def process_message(func):
     def wrapper(*args):
@@ -25,14 +39,14 @@ def process_message(func):
 @process_message
 def set_reservoir(address, *args):
     key = args[0]
-    value = args[1]
-    
+    value = args[1]    
     # Faire quelque chose avec les paramètres reçus
     print(f"key : {key}")
     print(f"Value: {value}")
-    
     param[key] = value
+
     reservoir.set_param(key, value)
+
 
 @process_message
 def update_note(address, *args):
@@ -51,8 +65,22 @@ def update_note(address, *args):
 
 @process_message
 def get_note(address, *args):
-    print("get note")
-    client.send_message("/", [42, 100])
+    # retrieve pressend notes 
+    list_note = list(note_set)
+    nb_pressed_keys = len(note_set)
+    sorted_notes = sorted(list_note)
+    # make a pred 
+    state = reservoir(to_press[i])
+    # dim reduction 
+    reduced = state@w_in.T
+    probs = softmax(reduced[:nb_pressed_keys])
+    press = np.random.choice(np.arange(nb_pressed_keys), p=probs)
+
+    # update logs 
+    states[i] = state
+    to_press[i][press] = 1  
+
+    client.send_message("/", [list_note[press], 100])
 
 if __name__ == "__main__":
     # Adresse IP et port sur lesquels écouter les messages OSC

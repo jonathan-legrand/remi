@@ -17,7 +17,7 @@ def create_model(res_size:int, lr:float=0.5, sr:float=0.9):
     reservoir = Reservoir(20, lr=0.5, sr=0.9)
 
     # step 2 output reservoir 
-    _ = Reservoir(5, input_dim=20)
+    _ = Reservoir(9, input_dim=20)
     # initiliaze 
     _.initialize()
     # get matrix 
