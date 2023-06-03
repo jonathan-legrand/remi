@@ -30,10 +30,11 @@ i = 0
 
 def process_message(func):
     def wrapper(*args):
-        try:
-            func(*args)
-        except Exception as error:
-            print(f"Error 400: Invalid Request : {error}")
+        func(*args)
+        # try:
+        #     func(*args)
+        # except Exception as error:
+        #     print(f"Error 400: Invalid Request : {error}")
     return wrapper
 
 @process_message
@@ -45,7 +46,8 @@ def set_reservoir(address, *args):
     print(f"Value: {value}")
     param[key] = value
 
-    reservoir.set_param(key, value)
+    print("warning: not changing params")
+    # reservoir.set_param(key, value)
 
 
 @process_message
@@ -65,6 +67,8 @@ def update_note(address, *args):
 
 @process_message
 def get_note(address, *args):
+
+    print("note_set", note_set)
     # retrieve pressend notes 
     list_note = list(note_set)
     nb_pressed_keys = len(note_set)
@@ -73,14 +77,19 @@ def get_note(address, *args):
     state = reservoir(to_press[i])
     # dim reduction 
     reduced = state@w_in.T
-    probs = softmax(reduced[:nb_pressed_keys])
-    press = np.random.choice(np.arange(nb_pressed_keys), p=probs)
+    probs = softmax(reduced[0,:nb_pressed_keys+1])
+    press = np.random.choice(np.arange(nb_pressed_keys+1), p=probs)
 
     # update logs 
     states[i] = state
-    to_press[i][press] = 1  
+    to_press[i][press] = 1
 
-    client.send_message("/", [list_note[press], 100])
+    print("press", press)
+    print("list_note", list_note)
+    print("press-1", press-1)
+
+    if press!=0:
+        client.send_message(str(list_note[press-1]), "None")
 
 if __name__ == "__main__":
     # Adresse IP et port sur lesquels écouter les messages OSC
