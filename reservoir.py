@@ -1,5 +1,6 @@
 from scipy.special import softmax
 from reservoirpy.nodes import Reservoir, Input, Ridge
+from reservoirpy.observables import spectral_radius
 import numpy as np
 
 
@@ -16,7 +17,8 @@ class ReservoirModel:
         want for note prediction, which we will use as a random readout
         """
         # step 1 base reservoir
-        self.reservoir = Reservoir(**reservoir_params)
+        self.reservoir = Reservoir(**reservoir_params, input_dim=max_notes+1)
+        self.reservoir.initialize()
 
         # step 2 output reservoir
         _ = Reservoir(max_notes, input_dim=reservoir_params["units"])
@@ -45,6 +47,16 @@ class ReservoirModel:
 
         return np.argmax(output)
 
+    def set_spectral_radius(self, sr):
+        print("sr", sr, type(sr))
+        print("W", type(self.reservoir.get_param("W")))
+        _epsilon = 1e-8  # used to avoid division by zero when rescaling spectral radius
+        current_sr = spectral_radius(self.reservoir.get_param("W"))
+        if -_epsilon < current_sr < _epsilon:
+            current_sr = _epsilon  # avoid div by zero exceptions.
+        self.reservoir.set_param("W", self.reservoir.get_param("W") * sr / current_sr)
+        print("Old sr", current_sr)
+        print("New sr", spectral_radius(self.reservoir.get_param("W")))
 
 
 

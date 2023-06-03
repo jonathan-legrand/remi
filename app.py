@@ -83,7 +83,7 @@ class App:
             self.create_reservoir_model()
             print("Creating new reservoir with", value, "neurons")
         elif key == "sr":
-            print("WARNING: can't change spectral radius yet")
+            self.reservoir_model.set_spectral_radius(value)
         else:
             self.reservoir_model.reservoir.set_param(key, value)
 
