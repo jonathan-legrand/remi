@@ -82,8 +82,9 @@ class Ware(tk.Tk):
         self.client.send_message(address, args)
         
     def get_button_clicked(self):
-        # Perform some action when the Get button is clicked
-        pass
+        address = "/reservoir/get_note"
+        args = ()  # Exemple d'argument
+        self.client.send_message(address, args)
     
 if __name__ == "__main__":
     # Adresse IP et port du destinataire OSC
