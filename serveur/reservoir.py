@@ -3,62 +3,48 @@ from reservoirpy.nodes import Reservoir, Input, Ridge
 import numpy as np
 
 
-def create_model(res_size:int, lr:float=0.5, sr:float=0.9):
-    """Creates two reservoirs a first used for state updates and making predictions called `reservoir`
-    and a second called `res_out` to initialize a random matrix to make projection from dim_out to size w
-    want for key prediction
 
-    Args:
-        res_size (int): size of adjacency matrix for reservoir
-        lr (float, optional): Leaking rate. Defaults to 0.5.
-        sr (float, optional): Spectral radius. Defaults to 0.9.
-    """
-    # step 1 base reservoir
-    reservoir = Reservoir(20, lr=0.5, sr=0.9)
+class ReservoirModel:
+    def __init__(self, reservoir_params, max_notes):
+        self.create_model(reservoir_params, max_notes)
+        self.outputs = [np.zeros(max_notes)]
+        self.states = []
 
-    # step 2 output reservoir 
-    _ = Reservoir(9, input_dim=20)
-    # initiliaze 
-    _.initialize()
-    # get matrix 
-    W_in = _.Win.toarray()
+    def create_model(self, reservoir_params, max_notes):
+        """Creates two reservoirs a first one used for state updates and making predictions called `reservoir`
+        and a second temporary one to initialize a random matrix to make projection from dim_out to size w
+        want for note prediction, which we will use as a random readout
+        """
+        # step 1 base reservoir
+        self.reservoir = Reservoir(**reservoir_params)
 
-    return reservoir, W_in
-
-def make_prediction(X:np.array, reservoir:Reservoir, W_in:np.array):
-    """
-    Returns a prediction for next key to play
-
-    Args:
-        X (np.array): timeseries use for prediction
-        reservoir (Reservoir): reservoir
-        W_in (np.array): projection matrix
-    """ 
-    # predict next state 
-    state =  reservoir(X)
-
-    # dimensionality reduction 
-    probas = softmax(state@W_in.T)
-
-    # return in one hot encoding 
-    key = np.random.choice(np.arange(5), p=probas[0])
-
-    return key 
-
-if __name__=='__main__':
-
-    # init a big array for buffer
-    values = np.zeros((10000, 5))
-    values[0][np.random.choice(np.arange(5))] = 1
-    reservoir, w_in = create_model(100, lr=0.5, sr=0.9)
-    i = 0
-    while True:
-        key = make_prediction(values[i], reservoir, w_in)
-        values[i+1][key] = 1
-        i += 1 
+        # step 2 output reservoir
+        _ = Reservoir(max_notes, input_dim=reservoir_params["units"])
+        # initiliaze
+        _.initialize()
+        # get matrix
+        self.readout = _.Win#.toarray()
 
 
-    
-    
-    
+    def predict_next_note(self, nb_pressed_keys):
+
+        # make a pred using last output as new input
+        state = self.reservoir(self.outputs[-1])
+
+        # compute output
+        output = (state @ self.readout.T)[0]
+        output = softmax(output[:nb_pressed_keys + 1])
+        choice = np.random.choice(range(nb_pressed_keys + 1), p=output)
+
+        # create one-hot vector of the input (and output) shape with 1 at the index of the choice
+        output = np.eye(self.readout.shape[0])[choice]
+
+        # update logs
+        self.outputs.append(output)
+        self.states.append(state)
+
+        return np.argmax(output)
+
+
+
 
