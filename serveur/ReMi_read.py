@@ -1,6 +1,7 @@
 from pythonosc import dispatcher
 from pythonosc import osc_server
 from pythonosc import udp_client
+import reservoir.py as rsv
 
 # Adresse IP et port du client "send.py"
 send_ip = "127.0.0.1"
@@ -9,7 +10,9 @@ send_port = 8000
 # Création du client OSC pour envoyer des messages à "send.py"
 client = udp_client.SimpleUDPClient(send_ip, send_port)
 
-note_set = {}
+note_set = set()
+param = {}
+reservoir, W_in = rsv.create_model(100)
 
 def process_message(func):
     def wrapper(*args):
@@ -27,6 +30,9 @@ def set_reservoir(address, *args):
     # Faire quelque chose avec les paramètres reçus
     print(f"key : {key}")
     print(f"Value: {value}")
+    
+    param[key] = value
+    reservoir.set_param(key, value)
 
 @process_message
 def update_note(address, *args):
@@ -46,7 +52,7 @@ def update_note(address, *args):
 @process_message
 def get_note(address, *args):
     print("get note")
-    client.send_message("/", note_set)
+    client.send_message("/", [42, 100])
 
 if __name__ == "__main__":
     # Adresse IP et port sur lesquels écouter les messages OSC
