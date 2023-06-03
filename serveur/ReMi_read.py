@@ -16,6 +16,11 @@ client = udp_client.SimpleUDPClient(send_ip, send_port)
 note_set = set()
 param = {}
 
+global reservoir
+global w_in
+global states
+global to_press
+
 def set_up():
     reservoir, W_in = rsv.create_model(100)
     states = np.zeros((10000, 20))
@@ -43,9 +48,12 @@ def set_reservoir(address, *args):
     # Faire quelque chose avec les paramètres reçus
     print(f"key : {key}")
     print(f"Value: {value}")
-    param[key] = value
+    if key == "N":
+        reservoir, w_in = rsv.create_model(value)
 
-    reservoir.set_param(key, value)
+    else:
+        param[key] = value
+        reservoir.set_param(key, value)
 
 
 @process_message
@@ -74,8 +82,7 @@ def get_note(address, *args):
     # dim reduction 
     reduced = state@w_in.T
     probs = softmax(reduced[:nb_pressed_keys])
-    press = np.random.choice(np.arange(nb_pressed_keys), p=probs)
-
+    press = np.random.choice(np.arange(nb_pressed_keys+1), p=probs)
     # update logs 
     states[i] = state
     to_press[i][press] = 1  
