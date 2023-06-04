@@ -2,6 +2,7 @@ from scipy.special import softmax
 from reservoirpy.nodes import Reservoir, Input, Ridge
 from reservoirpy.observables import spectral_radius
 import numpy as np
+import pickle
 
 
 
@@ -38,9 +39,11 @@ class ReservoirModel:
 
         # compute output
         output = (state @ self.readout.T)[0]
-        print("output before softmax", output)
+        presoftmax = np.copy(output)
+        print("output before softmax", presoftmax)
         output = softmax(self.softmax_gain * output[:nb_pressed_keys + 1])
-        print("output after softmax", output)
+        postsoftmax = np.copy(output)
+        print("output after softmax", postsoftmax)
         choice = np.random.choice(range(nb_pressed_keys + 1), p=output)
 
         # create one-hot vector of the input (and output) shape with 1 at the index of the choice
@@ -52,6 +55,17 @@ class ReservoirModel:
 
         # print saving file
         np.save('states', np.array(self.states))
+
+        # write info to display on GUI
+        to_gui = {
+            "presoftmax":list(presoftmax),
+            "postsoftmax": list(postsoftmax),
+            "sample": list(output),
+            "sample_idx": np.argmax(sample),
+        }
+        with open('to_gui.obj', 'wb') as fp:
+            pickle.dump(to_gui, fp)
+
 
         return np.argmax(output)
 
