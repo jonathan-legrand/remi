@@ -4,6 +4,7 @@ from pythonosc import udp_client
 import reservoir as rsv
 
 from scipy.special import softmax
+import pickle as pkl
 
 import numpy as np
 
@@ -50,6 +51,8 @@ class App:
         self.dp.map("/reservoir/update_note", self.update_note)
         self.dp.map("/reservoir/get_note", self.get_note)
 
+        
+
         # Création du serveur OSC
         self.server = osc_server.ThreadingOSCUDPServer((self.ip, self.receive_port), self.dp)
 
@@ -58,7 +61,7 @@ class App:
         self.server.serve_forever()
 
     def create_reservoir_model(self):
-        self.reservoir_model = rsv.ReservoirModel(self.reservoir_params, self.max_notes+1)
+        self.reservoir_model = rsv.ReservoirModel(self.reservoir_params, self.max_notes)
 
 
 
@@ -104,9 +107,9 @@ class App:
 
     @process_ableton_message
     def get_note(self, address, *args):
-
+        
         note_idx = self.reservoir_model.predict_next_note(nb_pressed_keys=len(self.note_set))
-
+        
         # retrieve pressend notes
         note_list = list(self.note_set)
         note_list = sorted(note_list)
@@ -120,7 +123,6 @@ class App:
             self.client.send_message("/send_note_to_ableton", note_list[note_idx-1])
 
 if __name__ == "__main__":
-
     app = App()
     app.start_server()
     

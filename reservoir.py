@@ -21,7 +21,7 @@ class ReservoirModel:
         self.reservoir.initialize()
 
         # step 2 output reservoir
-        _ = Reservoir(max_notes, input_dim=reservoir_params["units"])
+        _ = Reservoir(max_notes + 1, input_dim=reservoir_params["units"])
         # initiliaze
         _.initialize()
         # get matrix
