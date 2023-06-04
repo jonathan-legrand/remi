@@ -136,7 +136,7 @@ class App:
         note_list = list(self.note_set)
         note_list = sorted(note_list)
 
-        to_gui["sorted_notes"] = [" "] + [number_to_note(n)[0]+str(number_to_note(n)[1]) for n in note_list]
+        to_gui["sorted_notes"] = ["--"] + [number_to_note(n)[0]+str(number_to_note(n)[1]) for n in note_list]
         print("sorted_notes", to_gui["sorted_notes"])
 
         print("note_idx", note_idx)
