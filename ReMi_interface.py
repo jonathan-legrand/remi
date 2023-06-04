@@ -14,7 +14,7 @@ from pythonosc import dispatcher
 
 import pickle
 
-TEXT_SIZE = 20
+TEXT_SIZE = 15
 FONT = font=("Arial", TEXT_SIZE)
 
 def round_list(numbers):
@@ -136,7 +136,7 @@ class Ware(tk.Tk):
         
         # Create a frame to hold the widgets
         self.frame = tk.Frame(self)
-        self.frame.pack(anchor="w", padx=10, pady=10)  # Right alignment with padding
+        # self.frame.pack(anchor="w", padx=10, pady=10)  # Right alignment with padding
         
         
         self.variable = tk.StringVar()
@@ -203,11 +203,17 @@ class Ware(tk.Tk):
     def update_interface(self):
         # Mettez ici votre code pour mettre à jour les éléments de l'interface
         #self.note_label.config(text=str(self.note_liste))
-        with open('to_gui.obj', 'rb') as fp:
-            banana = pickle.load(fp)
-            print(banana)
-            self.reservoir_frame.refresh(presoftmax = round_list(banana['presoftmax']), postsoftmax = round_list(banana['postsoftmax']), sample = round_list(banana['sample']), sorted_notes = banana['sorted_notes'], sample_idx = banana['sample_idx'])
-    
+
+
+        try:
+            with open('to_gui.obj', 'rb') as fp:
+                banana = pickle.load(fp)
+                print(banana)
+                self.reservoir_frame.refresh(presoftmax = round_list(banana['presoftmax']), postsoftmax = round_list(banana['postsoftmax']), sample = round_list(banana['sample']), sorted_notes = banana['sorted_notes'], sample_idx = banana['sample_idx'])
+
+        except EOFError:
+            pass
+
         # Appelez la fonction update_interface() à chaque pas de temps (par exemple, toutes les 100 ms)
         self.after(100, self.update_interface)
         
@@ -269,7 +275,7 @@ if __name__ == "__main__":
     SEND = 9000
     
     app = App(IP, RECIEVE, SEND)
-    app.run()
+    app.run_gui()
 
 
     
