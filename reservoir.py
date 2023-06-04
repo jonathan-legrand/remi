@@ -54,7 +54,7 @@ class ReservoirModel:
         self.states.append(state)
 
         # print saving file
-        np.save('states', np.array(self.states))
+        np.save('states.npy', np.array(self.states))
 
         # write info to display on GUI
         to_gui = {
@@ -63,11 +63,9 @@ class ReservoirModel:
             "sample": list(output),
             "sample_idx": np.argmax(output),
         }
-        with open('to_gui.obj', 'wb') as fp:
-            pickle.dump(to_gui, fp)
 
 
-        return np.argmax(output)
+        return np.argmax(output), to_gui
 
     def set_spectral_radius(self, sr):
         print("sr", sr, type(sr))
