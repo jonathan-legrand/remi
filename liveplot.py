@@ -1,4 +1,5 @@
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
+plt.style.use("dark_background")
 
 import numpy as np 
 
@@ -59,5 +60,7 @@ if __name__=='__main__':
     # states_plot, = ax.plot([], [])
     ani = animation.FuncAnimation(fig, animate, np.arange(1, 200),
                               interval=25, blit=False)
+
+    plt.title("Reservoir activations")
     
     plt.show()
