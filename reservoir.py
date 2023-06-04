@@ -20,6 +20,7 @@ class ReservoirModel:
         self.reservoir = Reservoir(**reservoir_params, input_dim=max_notes+1)
         self.reservoir.initialize()
 
+
         # step 2 output reservoir
         _ = Reservoir(max_notes + 1, input_dim=reservoir_params["units"])
         # initiliaze
@@ -45,8 +46,9 @@ class ReservoirModel:
         # update logs
         self.outputs.append(output)
         self.states.append(state)
+
         # print saving file
-        np.save('states', self.states)
+        np.save('states', np.array(self.states))
 
         return np.argmax(output)
 
