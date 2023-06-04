@@ -6,9 +6,10 @@ import numpy as np
 
 
 class ReservoirModel:
-    def __init__(self, reservoir_params, max_notes):
+    def __init__(self, reservoir_params, max_notes, softmax_gain=1):
         self.create_model(reservoir_params, max_notes)
         self.outputs = [np.zeros(max_notes + 1)]
+        self.softmax_gain = softmax_gain
         self.states = []
 
     def create_model(self, reservoir_params, max_notes):
@@ -37,7 +38,9 @@ class ReservoirModel:
 
         # compute output
         output = (state @ self.readout.T)[0]
-        output = softmax(output[:nb_pressed_keys + 1])
+        print("output before softmax", output)
+        output = softmax(self.softmax_gain * output[:nb_pressed_keys + 1])
+        print("output after softmax", output)
         choice = np.random.choice(range(nb_pressed_keys + 1), p=output)
 
         # create one-hot vector of the input (and output) shape with 1 at the index of the choice
