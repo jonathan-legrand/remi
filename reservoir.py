@@ -53,12 +53,14 @@ class ReservoirModel:
         # update logs
         self.outputs.append(output)
         self.outputs = self.outputs[-20:]
-        self.states.append(state)
+        self.states.append(state[0])
         self.states = self.states[-20:]
 
         # print saving file
         if len(self.states)>0:
+            print(type(self.states[0]), self.states[0].dtype)
             np.save('states.npy', np.array(self.states))
+            # np.save('states.npy', np.random.random(np.array(self.states).shape))
 
         # write info to display on GUI
         to_gui = {
