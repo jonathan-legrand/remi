@@ -2,20 +2,27 @@ from pythonosc import dispatcher
 from pythonosc import osc_server
 from pythonosc import udp_client
 import reservoir as rsv
+from constants import *
 
 from scipy.special import softmax
 import pickle as pkl
 
 import numpy as np
 
+def number_to_note(number: int) -> tuple:
+    octave = number // NOTES_IN_OCTAVE
+    assert octave in OCTAVES, errors['notes']
+    assert 0 <= number <= 127, errors['notes']
+    note = NOTES[number % NOTES_IN_OCTAVE]
+
+    return note, octave
 
 def process_ableton_message(func):
     def wrapper(*args):
-        func(*args)
-        # try:
-        #     func(*args)
-        # except Exception as error:
-        #     print(f"Error 400: Invalid Request : {error}")
+        try:
+            func(*args)
+        except Exception as error:
+            print(f"Error 400: Invalid Request : {error}")
 
     return wrapper
 
@@ -116,7 +123,7 @@ class App:
 
         print("note_idx", note_idx)
         if note_idx>0:
-            print("note", note_list[note_idx-1])
+            print("note", note_list[note_idx-1], number_to_note(note_list[note_idx-1]))
 
         # index 0 is silence (no note played)
         if note_idx!=0:
