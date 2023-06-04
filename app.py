@@ -94,6 +94,8 @@ class App:
             print("Creating new reservoir with", value, "neurons")
         elif key == "sr":
             self.reservoir_model.set_spectral_radius(value)
+        elif key == "softmax_gain":
+            self.reservoir_model.softmax_gain = value
         else:
             self.reservoir_model.reservoir.set_param(key, value)
 
@@ -101,6 +103,7 @@ class App:
     @process_ableton_message
     def update_note(self, address, *args):
         pitch = args[0]
+
         velocity = args[1]
 
         # the key was released, we remove the note from the note options
