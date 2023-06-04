@@ -8,7 +8,7 @@ import numpy as np
 class ReservoirModel:
     def __init__(self, reservoir_params, max_notes):
         self.create_model(reservoir_params, max_notes)
-        self.outputs = [np.zeros(max_notes)]
+        self.outputs = [np.zeros(max_notes + 1)]
         self.states = []
 
     def create_model(self, reservoir_params, max_notes):
@@ -29,6 +29,7 @@ class ReservoirModel:
 
 
     def predict_next_note(self, nb_pressed_keys):
+        print('these are the outputs', self.outputs[-1])
 
         # make a pred using last output as new input
         state = self.reservoir(self.outputs[-1])
@@ -44,6 +45,8 @@ class ReservoirModel:
         # update logs
         self.outputs.append(output)
         self.states.append(state)
+        # print saving file
+        np.save('states', self.states)
 
         return np.argmax(output)
 
