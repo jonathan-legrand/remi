@@ -61,7 +61,7 @@ class ReservoirModel:
             "presoftmax":list(presoftmax),
             "postsoftmax": list(postsoftmax),
             "sample": list(output),
-            "sample_idx": np.argmax(sample),
+            "sample_idx": np.argmax(output),
         }
         with open('to_gui.obj', 'wb') as fp:
             pickle.dump(to_gui, fp)
