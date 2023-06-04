@@ -19,10 +19,11 @@ def number_to_note(number: int) -> tuple:
 
 def process_ableton_message(func):
     def wrapper(*args):
-        try:
-            func(*args)
-        except Exception as error:
-            print(f"Error 400: Invalid Request : {error}")
+        func(*args)
+        # try:
+        #     func(*args)
+        # except Exception as error:
+        #     print(f"Error 400: Invalid Request : {error}")
 
     return wrapper
 
@@ -75,7 +76,7 @@ class App:
     @process_ableton_message
     def reset_reservoir(self, address, *args):
         print("Resetting reservoir")
-        self.create_reservoir_model()
+        self.reservoir_model.create_model(self.reservoir_params, self.max_notes)
 
     @process_ableton_message
     def set_reservoir_parameter(self, address, *args):
@@ -90,7 +91,7 @@ class App:
 
         if key == "units":
             # if the user wants to change the number of neurons, we have no choice but recreating the reservoir
-            self.create_reservoir_model()
+            self.reservoir_model.create_model(self.reservoir_params, self.max_notes)
             print("Creating new reservoir with", value, "neurons")
         elif key == "sr":
             self.reservoir_model.set_spectral_radius(value)
@@ -129,6 +130,7 @@ class App:
         print("sorted_notes", to_gui["sorted_notes"])
 
         print("note_idx", note_idx)
+
         if note_idx>0:
             print("note", note_list[note_idx-1], number_to_note(note_list[note_idx-1]))
 

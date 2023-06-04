@@ -57,8 +57,9 @@ class ReservoirModel:
         self.states = self.states[-20:]
 
         # print saving file
-        np.save('states.npy', np.array(self.states))
-        # pickle.dump('states.pkl', np.array(self.states))
+        if len(self.states)>0:
+            np.save('states.npy', np.array(self.states))
+
         # write info to display on GUI
         to_gui = {
             "presoftmax":list(presoftmax),
