@@ -14,7 +14,7 @@ def animate(i):
 
     to_use = min(states.shape[1], 20)
 
-    if len(states.shape) == 1:
+    if len(states.shape) < 2:
         pass
 
     # case where we restart
