@@ -215,7 +215,7 @@ class Ware(tk.Tk):
             pass
 
         # Appelez la fonction update_interface() à chaque pas de temps (par exemple, toutes les 100 ms)
-        self.after(100, self.update_interface)
+        self.after(200, self.update_interface)
         
 class Receiver():
     def __init__(self, ip, receive_port, win):
@@ -231,6 +231,7 @@ class Receiver():
     @process_ableton_message
     def add_note(self, address, *args):
         note = args[0]
+        print("note", note)
         self.win.set_last_note(note)
         
     def listen(self):
@@ -241,8 +242,8 @@ class App():
     def __init__(self, ip, receive_port, send_port):
         # Création de la fenêtre principale
         self.window = Ware(ip, send_port)
-        # message udp
-        self.receiver = Receiver(ip, receive_port, self.window)
+        # # message udp
+        # self.receiver = Receiver(ip, receive_port, self.window)
 
     def run_server(self):
         # Démarrage du serveur
@@ -276,6 +277,7 @@ if __name__ == "__main__":
     
     app = App(IP, RECIEVE, SEND)
     app.run_gui()
+    # app.run_server()
 
 
     
