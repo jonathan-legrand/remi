@@ -9,9 +9,7 @@ import pickle
 class ReservoirModel:
     def __init__(self, reservoir_params, max_notes, softmax_gain=1):
         self.create_model(reservoir_params, max_notes)
-        self.outputs = [np.zeros(max_notes + 1)]
         self.softmax_gain = softmax_gain
-        self.states = []
 
     def create_model(self, reservoir_params, max_notes):
         """Creates two reservoirs a first one used for state updates and making predictions called `reservoir`
@@ -21,6 +19,9 @@ class ReservoirModel:
         # step 1 base reservoir
         self.reservoir = Reservoir(**reservoir_params, input_dim=max_notes+1)
         self.reservoir.initialize()
+        self.states = []
+        self.outputs = [np.zeros(max_notes + 1)]
+
 
 
         # step 2 output reservoir

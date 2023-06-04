@@ -75,7 +75,7 @@ class Ware(tk.Tk):
         # sr 10-3 1000
         # input_scaling 10-3 1000
         lr = self.key_entry.get_entry_value()
-        sr = float(self.value_entry.get_entry_value())
+        sr = 1
         # Use lr and sr values for processing
         address = "/reservoir/set_reservoir"
         args = (lr, sr)  # Exemple d'argument
