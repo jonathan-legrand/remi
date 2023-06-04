@@ -4,7 +4,7 @@ This project was developed during the [Hack'1'Robo hackathon](https://sites.goog
 
 ## Presentation
 
-ReMi has the following features:
+ReMi provides the following features:
 * Generate arpeggios with a [Reservoir Computing](https://en.wikipedia.org/wiki/Reservoir_computing)  neural network
 * Control reservoir hyperparameters in real time through MIDI
 * Visualise reservoir states and processing steps in real time
