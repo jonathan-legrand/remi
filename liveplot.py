@@ -12,17 +12,19 @@ def animate(i):
     ax.set_xlim([0,states.shape[0]])    
     print("this is the shape", states.shape)
 
+    to_use = min(states.shape[1], 20)
+
     if len(states.shape) == 1:
         pass
 
     # case where we restart
     elif states.shape[0] < len(datas[0]):
-        for i in range(20):
+        for i in range(to_use):
             datas[i] += list(states[:, i])
             lines[i].set_data(np.arange(states.shape[0]), datas[i])
 
     else:
-        for i in range(20):
+        for i in range(to_use):
             datas[i] += list(states[len(datas[i]):, i])
             lines[i].set_data(np.arange(states.shape[0]), datas[i])
 
