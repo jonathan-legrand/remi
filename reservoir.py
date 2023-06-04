@@ -52,11 +52,13 @@ class ReservoirModel:
 
         # update logs
         self.outputs.append(output)
+        self.outputs = self.outputs[-20:]
         self.states.append(state)
+        self.states = self.states[-20:]
 
         # print saving file
         np.save('states.npy', np.array(self.states))
-
+        # pickle.dump('states.pkl', np.array(self.states))
         # write info to display on GUI
         to_gui = {
             "presoftmax":list(presoftmax),

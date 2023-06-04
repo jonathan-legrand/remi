@@ -5,7 +5,7 @@ import reservoir as rsv
 from constants import *
 
 from scipy.special import softmax
-import pickle as pkl
+import pickle
 
 import numpy as np
 
