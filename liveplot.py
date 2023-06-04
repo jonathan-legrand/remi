@@ -12,7 +12,7 @@ def animate(i):
         ax.set_xlim([0, states.shape[0]])
         print("this is the shape", states.shape)
 
-        if len(states.shape) < 2:
+        if len(states.shape) < 1:
             pass
 
         else:

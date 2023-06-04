@@ -64,6 +64,8 @@ class App:
         # Création du serveur OSC
         self.server = osc_server.ThreadingOSCUDPServer((self.ip, self.receive_port), self.dp)
 
+        self.parameter_changes_to_apply = {}
+
     def start_server(self):
         print(f"Waiting for OSC messages on {self.ip}:{self.receive_port}")
         self.server.serve_forever()
@@ -80,25 +82,31 @@ class App:
 
     @process_ableton_message
     def set_reservoir_parameter(self, address, *args):
-        key = args[0]
-        value = args[1]
-        # Faire quelque chose avec les paramètres reçus
-        print(f"key : {key}")
-        print(f"Value: {value}")
+        self.parameter_changes_to_apply[args[0]] = args[1]
 
-        # update the value in param dictionary
-        self.reservoir_params[key] = value
+    def apply_reservoir_parameters(self):
+        for key, value in self.parameter_changes_to_apply.items():
+            # Faire quelque chose avec les paramètres reçus
+            print(f"key : {key}")
+            print(f"Value: {value}")
 
-        if key == "units":
-            # if the user wants to change the number of neurons, we have no choice but recreating the reservoir
-            self.reservoir_model.create_model(self.reservoir_params, self.max_notes)
-            print("Creating new reservoir with", value, "neurons")
-        elif key == "sr":
-            self.reservoir_model.set_spectral_radius(value)
-        elif key == "softmax_gain":
-            self.reservoir_model.softmax_gain = value
-        else:
-            self.reservoir_model.reservoir.set_param(key, value)
+            # update the value in param dictionary
+            self.reservoir_params[key] = value
+
+            if key == "units":
+
+                # if the user wants to change the number of neurons, we have no choice but recreating the reservoir
+                self.reservoir_model.create_model(self.reservoir_params, self.max_notes)
+                print("Creating new reservoir with", value, "neurons")
+            elif key == "sr":
+                self.reservoir_model.set_spectral_radius(value)
+            elif key == "softmax_gain":
+                self.reservoir_model.softmax_gain = value
+            else:
+                self.reservoir_model.reservoir.set_param(key, value)
+
+        self.parameter_changes_to_apply = {}
+
 
 
     @process_ableton_message
@@ -118,6 +126,8 @@ class App:
 
     @process_ableton_message
     def get_note(self, address, *args):
+
+        self.apply_reservoir_parameters()
         
         note_idx, to_gui = self.reservoir_model.predict_next_note(nb_pressed_keys=len(self.note_set))
 
