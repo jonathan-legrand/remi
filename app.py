@@ -118,15 +118,22 @@ class App:
     @process_ableton_message
     def get_note(self, address, *args):
         
-        note_idx = self.reservoir_model.predict_next_note(nb_pressed_keys=len(self.note_set))
+        note_idx, to_gui = self.reservoir_model.predict_next_note(nb_pressed_keys=len(self.note_set))
+
         
         # retrieve pressend notes
         note_list = list(self.note_set)
         note_list = sorted(note_list)
 
+        to_gui["sorted_notes"] = [" "] + [number_to_note(n)[0]+str(number_to_note(n)[1]) for n in note_list]
+        print("sorted_notes", to_gui["sorted_notes"])
+
         print("note_idx", note_idx)
         if note_idx>0:
             print("note", note_list[note_idx-1], number_to_note(note_list[note_idx-1]))
+
+        with open('to_gui.obj', 'wb') as fp:
+            pickle.dump(to_gui, fp)
 
         # index 0 is silence (no note played)
         if note_idx!=0:
