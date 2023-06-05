@@ -1,4 +1,4 @@
-# ReMi: A Reservoir Computing MIDI Arpeggiator
+# ReMi: A Reservoir Computing MIDI Arpeggiator for Ableton
 
 This project was developed during the [Hack'1'Robo hackathon](https://sites.google.com/view/hack1robo/projets) and received special recognition from the jury.
 
