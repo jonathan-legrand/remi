@@ -206,7 +206,7 @@ class Ware(tk.Tk):
 
 
         try:
-            with open('to_gui.obj', 'rb') as fp:
+            with open('tmp/to_gui.obj', 'rb') as fp:
                 banana = pickle.load(fp)
                 print(banana)
                 self.reservoir_frame.refresh(presoftmax = round_list(banana['presoftmax']), postsoftmax = round_list(banana['postsoftmax']), sample = round_list(banana['sample']), sorted_notes = banana['sorted_notes'], sample_idx = banana['sample_idx'])

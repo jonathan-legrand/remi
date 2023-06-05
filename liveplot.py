@@ -8,7 +8,7 @@ import matplotlib.animation as animation
 def animate(i):
     # load data
     try:
-        states = np.load("states.npy")
+        states = np.load("tmp/states.npy")
         ax.set_ylim([-1, 1])
         ax.set_xlim([0, states.shape[0]])
         print("this is the shape", states.shape)

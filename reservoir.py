@@ -60,8 +60,7 @@ class ReservoirModel:
         if len(self.states)>0:
             print(type(self.states[0]), self.states[0].dtype)
             print(np.array(self.states).shape)
-            np.save('states.npy', np.array(self.states))
-            # np.save('states.npy', np.random.random(np.array(self.states).shape))
+            np.save('tmp/states.npy', np.array(self.states))
 
         # write info to display on GUI
         to_gui = {

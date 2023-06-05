@@ -144,7 +144,7 @@ class App:
         if note_idx>0:
             print("note", note_list[note_idx-1], number_to_note(note_list[note_idx-1]))
 
-        with open('to_gui.obj', 'wb') as fp:
+        with open('tmp/to_gui.obj', 'wb') as fp:
             pickle.dump(to_gui, fp)
 
         # index 0 is silence (no note played)
