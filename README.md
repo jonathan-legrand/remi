@@ -26,10 +26,9 @@ Here are some useful features that could be implemented in the future. Don't hes
 
 ## Demo
 
-This quick preliminary demo is just meant for you to hear what ReMi can sound like. Four keys were pressed constantly and the order of the notes was chosen by ReMi.
+This quick preliminary demo is just meant for you to hear what ReMi can sound like. Four keys were pressed constantly and the order of the notes was chosen by ReMi. Drums were not played by ReMi (although it could have).
 
-_NB: Keep in mind that this is just an example. A Reservoir is a universal dynamical system approximator. ReMi could therefore generate any possible melody.
-_
+_NB: Keep in mind that this is just an example. A Reservoir is a universal dynamical system approximator. ReMi could therefore generate any possible melody._
 
 https://github.com/HugoChateauLaurent/remi/assets/26091283/ecacce90-4ec1-4b0d-9ea5-cdc79b8106c3
 
