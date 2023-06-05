@@ -25,6 +25,6 @@ Here are some useful features that could be implemented in the future. Don't hes
 - [ ] Add a parameter that controls the probability of playing no note (silence). Currently, silence is represented in the same way as a note. Hence its probability of being selected for the beat cannot be differentially modulated.
 
 
----
+## 
 
 ![image](https://github.com/HugoChateauLaurent/remi/assets/26091283/7dc9542b-a040-4572-b4d6-b8a20356d439)
