@@ -84,5 +84,9 @@ class ReservoirModel:
         print("Old sr", current_sr)
         print("New sr", spectral_radius(self.reservoir.get_param("W")))
 
+    def set_input_scaling(self, new_input_scaling, old_input_scaling):
+        Win = self.reservoir.get_param("Win")
+        self.reservoir.set_param("Win", Win / old_input_scaling * new_input_scaling)
+
 
 

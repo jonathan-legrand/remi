@@ -90,6 +90,9 @@ class App:
             print(f"key : {key}")
             print(f"Value: {value}")
 
+            if key == "input_scaling":
+                old_input_scaling = self.reservoir_params["input_scaling"]
+
             # update the value in param dictionary
             self.reservoir_params[key] = value
 
@@ -102,6 +105,8 @@ class App:
                 self.reservoir_model.set_spectral_radius(value)
             elif key == "softmax_gain":
                 self.reservoir_model.softmax_gain = value
+            elif key == "input_scaling":
+                self.reservoir_model.set_input_scaling(value, old_input_scaling)
             else:
                 self.reservoir_model.reservoir.set_param(key, value)
 

@@ -11,11 +11,11 @@ This project was developed during the [Hack'1'Robo hackathon](https://sites.goog
 
 ## Usage
 
-1. **Add**  _remi.amxd_ to a MIDI Ableton track
-2. **Run** _app.py_ to start communication between Max for Live and Python
-3. **Run** _liveplot.py_ to visualise reservoir states
-4. **Run** _gui.py_ to visualise processing steps
-5. **Press keys**, and enjoy riding the edge of chaos :)
+1. Add ```remi.amxd``` to a MIDI Ableton track
+2. Run ```app.py``` to start communication between Max for Live and Python
+3. Run ```liveplot.py``` to visualise reservoir states
+4. Run ```gui.py``` to visualise processing steps
+5. Press keys, and enjoy riding the edge of chaos :)
 
 ## Future features
 
