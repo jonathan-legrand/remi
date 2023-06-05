@@ -24,6 +24,14 @@ Here are some useful features that could be implemented in the future. Don't hes
 - [ ] Add a pulse as an extra input to the reservoir, control its gain and periodicity. A more sophisticated approach would be to add a step sequencer as input (multiple pulses with their own rhythmic pattern).
 - [ ] Add a parameter that controls the probability of playing no note (silence). Currently, silence is represented in the same way as a note. Hence its probability of being selected for the beat cannot be differentially modulated.
 
+## Demo
+
+This quick preliminary demo is just meant for you to hear what ReMi can sound like. Four keys were pressed constantly and the order of the notes was chosen by ReMi.
+
+_NB: Keep in mind that this is just an example. A Reservoir is a universal dynamical system approximator. ReMi could therefore generate any possible melody.
+_
+
+https://github.com/HugoChateauLaurent/remi/assets/26091283/ecacce90-4ec1-4b0d-9ea5-cdc79b8106c3
 
 ## 
 
