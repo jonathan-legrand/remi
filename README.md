@@ -23,6 +23,7 @@ Here are some useful features that could be implemented in the future. Don't hes
 
 - [ ] Add a pulse as an extra input to the reservoir, control its gain and periodicity. A more sophisticated approach would be to add a step sequencer as input (multiple pulses with their own rhythmic pattern).
 - [ ] Add a parameter that controls the probability of playing no note (silence). Currently, silence is represented in the same way as a note. Hence its probability of being selected for the beat cannot be differentially modulated.
+- [ ] Save/load reservoir weights and dynamics
 
 ## Demo
 
