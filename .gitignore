@@ -1,2 +1,3 @@
 *.obj
 *.npy
+tmp/
