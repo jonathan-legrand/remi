@@ -27,7 +27,7 @@ def animate(i):
         # states_plot.set_data(np.arange(states.shape[0][j:]), states[j])
 
         # states_plot.set_data(np.tile(np.arange(states.shape[0])[None,j:], (20, 1)), states[j:,:20])
-    except ValueError:
+    except (ValueError, FileNotFoundError) as e:
         pass
 
 

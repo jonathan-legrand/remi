@@ -211,7 +211,7 @@ class Ware(tk.Tk):
                 print(banana)
                 self.reservoir_frame.refresh(presoftmax = round_list(banana['presoftmax']), postsoftmax = round_list(banana['postsoftmax']), sample = round_list(banana['sample']), sorted_notes = banana['sorted_notes'], sample_idx = banana['sample_idx'])
 
-        except EOFError:
+        except (EOFError, FileNotFoundError) as e:
             pass
 
         # Appelez la fonction update_interface() à chaque pas de temps (par exemple, toutes les 100 ms)
