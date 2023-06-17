@@ -13,7 +13,7 @@ def animate(i):
         ax.set_xlim([0, states.shape[0]])
         print("this is the shape", states.shape)
 
-        if len(states.shape) < 1:
+        if len(states) < 1:
             pass
 
         else:
@@ -50,17 +50,17 @@ if __name__=='__main__':
     j = 0 
 
     lines = []
-    datas = []
 
     for index in range(20):
-        lobj = ax.plot([],[],lw=2)[0]
+        lobj = ax.plot([],[],lw=1)[0]
         lines.append(lobj)
-        datas.append([])
-    
+
+    plt.axis('off')
+
     # states_plot, = ax.plot([], [])
     ani = animation.FuncAnimation(fig, animate, np.arange(1, 200),
                               interval=200, blit=False)
 
-    plt.title("Reservoir activations")
-    
+    # plt.title("Reservoir activations")
+
     plt.show()

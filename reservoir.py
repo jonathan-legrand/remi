@@ -1,8 +1,13 @@
+import os
+
 from scipy.special import softmax
 from reservoirpy.nodes import Reservoir, Input, Ridge
 from reservoirpy.observables import spectral_radius
 import numpy as np
 import pickle
+
+from sklearn.decomposition import PCA, IncrementalPCA
+
 
 
 
@@ -10,6 +15,7 @@ class ReservoirModel:
     def __init__(self, reservoir_params, max_notes, softmax_gain=1):
         self.create_model(reservoir_params, max_notes)
         self.softmax_gain = softmax_gain
+        self.pca = PCA(n_components=2)
 
     def create_model(self, reservoir_params, max_notes):
         """Creates two reservoirs a first one used for state updates and making predictions called `reservoir`
@@ -38,29 +44,29 @@ class ReservoirModel:
         # make a pred using last output as new input
         state = self.reservoir(self.outputs[-1])
 
-        # compute output
-        output = (state @ self.readout.T)[0]
-        presoftmax = np.copy(output)
-        print("output before softmax", presoftmax)
-        output = softmax(self.softmax_gain * output[:nb_pressed_keys + 1])
-        postsoftmax = np.copy(output)
-        print("output after softmax", postsoftmax)
-        choice = np.random.choice(range(nb_pressed_keys + 1), p=output)
-
-        # create one-hot vector of the input (and output) shape with 1 at the index of the choice
-        output = np.eye(self.readout.shape[0])[choice]
+        output, presoftmax, postsoftmax, choice = self.predict_note_from_state(state, nb_pressed_keys)
 
         # update logs
         self.outputs.append(output)
-        self.outputs = self.outputs[-20:]
+        self.outputs = self.outputs[-100:]
         self.states.append(state[0])
-        self.states = self.states[-20:]
+        self.states = self.states[-100:]
 
         # print saving file
-        if len(self.states)>0:
-            print(type(self.states[0]), self.states[0].dtype)
-            print(np.array(self.states).shape)
+        if len(self.states)>2:
+
+            states_pca = self.compute_pca()
+            xys, pca_space_indices, pca_space_probabilities = self.projections_notes(nb_pressed_keys)
+
+            if not os.path.exists("tmp/"):
+                os.makedirs("tmp/")
             np.save('tmp/states.npy', np.array(self.states))
+            np.save('tmp/states_pca.npy', states_pca)
+            np.save('tmp/pca_territories.npy', {
+                "xys":xys,
+                "pca_space_indices":pca_space_indices,
+                "pca_space_probabilities":pca_space_probabilities
+            }, allow_pickle=True)
 
         # write info to display on GUI
         to_gui = {
@@ -73,6 +79,21 @@ class ReservoirModel:
 
         return np.argmax(output), to_gui
 
+    def predict_note_from_state(self, state, nb_pressed_keys):
+        # compute output
+        output = (state @ self.readout.T)[0]
+        presoftmax = np.copy(output)
+        print("output before softmax", presoftmax)
+        output = softmax(self.softmax_gain * output[:nb_pressed_keys + 1])
+        postsoftmax = np.copy(output)
+        print("output after softmax", postsoftmax)
+        choice = np.random.choice(range(nb_pressed_keys + 1), p=output)
+
+        # create one-hot vector of the input (and output) shape with 1 at the index of the choice
+        output = np.eye(self.readout.shape[0])[choice]
+
+        return output, presoftmax, postsoftmax, choice
+
     def set_spectral_radius(self, sr):
         print("sr", sr, type(sr))
         print("W", type(self.reservoir.get_param("W")))
@@ -83,6 +104,34 @@ class ReservoirModel:
         self.reservoir.set_param("W", self.reservoir.get_param("W") * sr / current_sr)
         print("Old sr", current_sr)
         print("New sr", spectral_radius(self.reservoir.get_param("W")))
+
+    def compute_pca(self):
+        self.states_pca = self.pca.fit_transform(self.states)
+        return self.states_pca
+
+    def projections_notes(self, nb_pressed_keys, granularity_num=10):
+        self.xlim_pca = (min(self.states_pca[:, 0]), max(self.states_pca[:, 0]))
+        self.ylim_pca = (min(self.states_pca[:, 1]), max(self.states_pca[:, 1]))
+
+        xs = np.linspace(self.xlim_pca[0], self.xlim_pca[1], granularity_num)
+        ys = np.linspace(self.ylim_pca[0], self.ylim_pca[1], granularity_num)
+        indices = []
+        probabilities = []
+
+        xys = np.transpose([np.tile(xs, len(ys)), np.repeat(ys, len(xs))])
+
+        states = self.pca.inverse_transform(xys)
+
+        print("states", states.shape)
+
+        for s in states:
+            output, presoftmax, postsoftmax, choice = self.predict_note_from_state(s[None,:], nb_pressed_keys)
+            postsoftmax_argmax = np.argmax(postsoftmax)
+            indices.append(postsoftmax_argmax)
+            probabilities.append(postsoftmax[postsoftmax_argmax])
+
+        return xys, np.array(indices), np.array(probabilities)
+
 
     def set_input_scaling(self, new_input_scaling, old_input_scaling):
         Win = self.reservoir.get_param("Win")
