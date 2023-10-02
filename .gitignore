@@ -2,3 +2,4 @@
 *.npy
 *.pyc
 tmp/
+__pycache__/
