@@ -33,6 +33,13 @@ _NB: Keep in mind that this is just an example. A Reservoir is a universal dynam
 
 https://github.com/HugoChateauLaurent/remi/assets/26091283/ecacce90-4ec1-4b0d-9ea5-cdc79b8106c3
 
-## 
+##
 
 ![image](https://github.com/HugoChateauLaurent/remi/assets/26091283/7dc9542b-a040-4572-b4d6-b8a20356d439)
+
+## Requirement
+Use the Requirement file:
+- ```pip install -r requirements.txt``` or ```pip3 install -r requirements.txt```
+Tkinter should be installed on your system:
+- for Linux: ``sudo apt-get install python3-tk```or ```sudo apt-get install python-tk```
+- for Mac OS: ```brew install python-tk```
