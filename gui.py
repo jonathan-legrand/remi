@@ -207,9 +207,9 @@ class Ware(tk.Tk):
 
         try:
             with open('tmp/to_gui.obj', 'rb') as fp:
-                banana = pickle.load(fp)
-                print(banana)
-                self.reservoir_frame.refresh(presoftmax = round_list(banana['presoftmax']), postsoftmax = round_list(banana['postsoftmax']), sample = round_list(banana['sample']), sorted_notes = banana['sorted_notes'], sample_idx = banana['sample_idx'])
+                to_gui = pickle.load(fp)
+                print(to_gui)
+                self.reservoir_frame.refresh(presoftmax = round_list(to_gui['presoftmax']), postsoftmax = round_list(to_gui['postsoftmax']), sample = round_list(to_gui['sample']), sorted_notes = to_gui['sorted_notes'], sample_idx = to_gui['sample_idx'])
 
         except (EOFError, FileNotFoundError) as e:
             pass

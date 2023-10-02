@@ -15,7 +15,6 @@ class ReservoirModel:
     def __init__(self, reservoir_params, max_notes, softmax_gain=1):
         self.create_model(reservoir_params, max_notes)
         self.softmax_gain = softmax_gain
-        self.pca = PCA(n_components=2)
 
     def create_model(self, reservoir_params, max_notes):
         """Creates two reservoirs a first one used for state updates and making predictions called `reservoir`
@@ -37,6 +36,26 @@ class ReservoirModel:
         # get matrix
         self.readout = _.Win#.toarray()
 
+        self.compute_color_preferences()
+
+    def compute_color_preferences(self, softmax_gain=300000):
+        print(self.readout.shape)
+        readout_arr = self.readout.toarray()
+        readout_softmax = softmax(readout_arr * softmax_gain, axis=0)
+
+        # for i in range(20):
+        #     print(readout_softmax[:,i])
+
+        self.color_preferences_indices = np.argmax(readout_softmax, axis=0)
+        self.color_preferences_strength = np.max(readout_softmax, axis=0)
+
+        # self.color_preferences_strength
+
+        if not os.path.exists("tmp/"):
+            os.makedirs("tmp/")
+        np.save('tmp/color_preferences_indices.npy', self.color_preferences_indices)
+        np.save('tmp/color_preferences_strength.npy', self.color_preferences_strength)
+
 
     def predict_next_note(self, nb_pressed_keys):
         print('these are the outputs', self.outputs[-1])
@@ -48,9 +67,9 @@ class ReservoirModel:
 
         # update logs
         self.outputs.append(output)
-        self.outputs = self.outputs[-100:]
+        self.outputs = self.outputs[-30:]
         self.states.append(state[0])
-        self.states = self.states[-100:]
+        self.states = self.states[-30:]
 
         # print saving file
         if len(self.states)>2:
@@ -62,6 +81,7 @@ class ReservoirModel:
                 os.makedirs("tmp/")
             np.save('tmp/states.npy', np.array(self.states))
             np.save('tmp/states_pca.npy', states_pca)
+            np.save('tmp/nb_pressed_keys.npy', nb_pressed_keys)
             np.save('tmp/pca_territories.npy', {
                 "xys":xys,
                 "pca_space_indices":pca_space_indices,
@@ -106,6 +126,7 @@ class ReservoirModel:
         print("New sr", spectral_radius(self.reservoir.get_param("W")))
 
     def compute_pca(self):
+        self.pca = PCA(n_components=2, random_state=1)
         self.states_pca = self.pca.fit_transform(self.states)
         return self.states_pca
 
