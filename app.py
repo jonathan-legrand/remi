@@ -152,9 +152,17 @@ class App:
         with open('tmp/to_gui.obj', 'wb') as fp:
             pickle.dump(to_gui, fp)
 
+        # debug xav
+        print("whole list", note_list)
+        # print("current note",note_list[note_idx-1])
+
         # index 0 is silence (no note played)
         if note_idx!=0:
             self.client.send_message("/send_note_to_ableton", note_list[note_idx-1])
+        else: #DEBUG: xav tries to debug that ableton live never stops playing the last note
+            #self.client.send_message("/send_note_to_ableton", [])
+            pass
+            
 
 if __name__ == "__main__":
     app = App()

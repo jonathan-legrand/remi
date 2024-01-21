@@ -9,7 +9,12 @@ import pickle
 from sklearn.decomposition import PCA, IncrementalPCA
 
 
-past_horizon = 15 #30
+PAST_HORIZON = 15 #30           # number of past inputs to be played on the neurons display or the PCA display (originally set to 30)
+
+NO_FEEDBACK_IF_SILENCE = False   # put all connection from first output backing to reservoir to zeros
+                                # this means that the reservoir won't receive any feedback from this output
+                                # so, the user is really hearing what is feedback to the reservoir
+                                # if this term is set to False, then the silences will produce an innaudible note that will be fedback to the reservoir
 
 class ReservoirModel:
     def __init__(self, reservoir_params, max_notes, softmax_gain=1):
@@ -67,9 +72,9 @@ class ReservoirModel:
 
         # update logs
         self.outputs.append(output)
-        self.outputs = self.outputs[-past_horizon:]
+        self.outputs = self.outputs[-PAST_HORIZON:]
         self.states.append(state[0])
-        self.states = self.states[-past_horizon:]
+        self.states = self.states[-PAST_HORIZON:]
 
         # print saving file
         if len(self.states)>2:
@@ -153,9 +158,18 @@ class ReservoirModel:
 
         return xys, np.array(indices), np.array(probabilities)
 
-
+    # xav: there is where we define the feedback from readout to reservoir
     def set_input_scaling(self, new_input_scaling, old_input_scaling):
         Win = self.reservoir.get_param("Win")
+        # print("--Win-", Win)
+        # print("--shape-", Win.shape)
+        if NO_FEEDBACK_IF_SILENCE:
+            # put all connection from first output backing to reservoir to zeros
+            # this means that the reservoir won't receive any feedback from this output
+            # so, the user is really hearing what is feedback to the reservoir
+            # if this term is set to False, then the silences will produce an innaudible note that will be fedback to the reservoir
+            Win[:, 0] *= 0 
+
         self.reservoir.set_param("Win", Win / old_input_scaling * new_input_scaling)
 
 
