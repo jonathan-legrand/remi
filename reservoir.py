@@ -9,7 +9,7 @@ import pickle
 from sklearn.decomposition import PCA, IncrementalPCA
 
 
-
+past_horizon = 15 #30
 
 class ReservoirModel:
     def __init__(self, reservoir_params, max_notes, softmax_gain=1):
@@ -67,13 +67,13 @@ class ReservoirModel:
 
         # update logs
         self.outputs.append(output)
-        self.outputs = self.outputs[-30:]
+        self.outputs = self.outputs[-past_horizon:]
         self.states.append(state[0])
-        self.states = self.states[-30:]
+        self.states = self.states[-past_horizon:]
 
         # print saving file
         if len(self.states)>2:
-
+            #TODO: XAV, tester si on peut faire une PCA incrémentalement sans avoir à tout recalculer 
             states_pca = self.compute_pca()
             xys, pca_space_indices, pca_space_probabilities = self.projections_notes(nb_pressed_keys)
 

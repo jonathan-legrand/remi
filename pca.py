@@ -12,6 +12,8 @@ import numpy as np
 
 import matplotlib.animation as animation
 
+ROTATE = True #Rotate PCA or not
+
 def animate(i):
     # load data
     try:
@@ -32,36 +34,39 @@ def animate(i):
 
             if len(old_states_pca) in [len(states_pca) - 1, len(states_pca)]:
 
-                states_pca_flipped_x = np.copy(states_pca)
-                states_pca_flipped_x[:,0] = -states_pca_flipped_x[:,0]
-                states_pca_flipped_y = np.copy(states_pca)
-                states_pca_flipped_y[:,1] = -states_pca_flipped_y[:,1]
-                states_pca_flipped_xy = np.copy(states_pca)
-                states_pca_flipped_xy = -states_pca_flipped_xy
+                if ROTATE:
+                    states_pca_flipped_x = np.copy(states_pca)
+                    states_pca_flipped_x[:,0] = -states_pca_flipped_x[:,0]
+                    states_pca_flipped_y = np.copy(states_pca)
+                    states_pca_flipped_y[:,1] = -states_pca_flipped_y[:,1]
+                    states_pca_flipped_xy = np.copy(states_pca)
+                    states_pca_flipped_xy = -states_pca_flipped_xy
 
-                diff_orig = mse(old_states_pca, states_pca[-len(old_states_pca):])
-                diff_flipped_x = mse(old_states_pca, states_pca_flipped_x[-len(old_states_pca):])
-                diff_flipped_y = mse(old_states_pca, states_pca_flipped_y[-len(old_states_pca):])
-                diff_flipped_xy = mse(old_states_pca, states_pca_flipped_xy[-len(old_states_pca):])
+                    diff_orig = mse(old_states_pca, states_pca[-len(old_states_pca):])
+                    diff_flipped_x = mse(old_states_pca, states_pca_flipped_x[-len(old_states_pca):])
+                    diff_flipped_y = mse(old_states_pca, states_pca_flipped_y[-len(old_states_pca):])
+                    diff_flipped_xy = mse(old_states_pca, states_pca_flipped_xy[-len(old_states_pca):])
 
-                best = np.argmin([diff_orig, diff_flipped_x, diff_flipped_y, diff_flipped_xy])
+                    best = np.argmin([diff_orig, diff_flipped_x, diff_flipped_y, diff_flipped_xy])
 
-                if best == 1:
-                    states_pca = states_pca_flipped_x
-                    pca_territories["xys"][:,0] = -pca_territories["xys"][:,0]
+                
+                    if best == 1:
+                        states_pca = states_pca_flipped_x
+                        pca_territories["xys"][:,0] = -pca_territories["xys"][:,0]
 
-                if best == 2:
-                    states_pca = states_pca_flipped_y
-                    pca_territories["xys"][:, 1] = -pca_territories["xys"][:, 1]
-                if best == 3:
-                    states_pca = states_pca_flipped_xy
-                    pca_territories["xys"] = -pca_territories["xys"]
+                    if best == 2:
+                        states_pca = states_pca_flipped_y
+                        pca_territories["xys"][:, 1] = -pca_territories["xys"][:, 1]
+                    if best == 3:
+                        states_pca = states_pca_flipped_xy
+                        pca_territories["xys"] = -pca_territories["xys"]
 
             trajectory_line.set_data(states_pca[:,0], states_pca[:,1])
             trajectory_scatter.set_offsets(states_pca)
 
             offset = 1
 
+            # test size window
             ax.set_xlim(min(states_pca[:,0]-offset), max(states_pca[:,0])+offset)
             ax.set_ylim(min(states_pca[:,1]-offset), max(states_pca[:,1])+offset)
 
@@ -88,16 +93,14 @@ def animate(i):
             print("granularity_num", granularity_num)
 
             im = rgba_colors.reshape(granularity_num,granularity_num,-1) * 1
-            if best==1:
-                im = im[:,::-1]
 
-
-            elif best==2:
-                im = im[::-1,:]
-
-
-            elif best==3:
-                im = im[::-1,::-1]
+            if ROTATE:
+                if best==1:
+                    im = im[:,::-1]
+                elif best==2:
+                    im = im[::-1,:]
+                elif best==3:
+                    im = im[::-1,::-1]
 
             xlim = (np.min(states_pca[:,0]), np.max(states_pca[:,0]))
             ylim = (np.min(states_pca[:,1]), np.max(states_pca[:,1]))
@@ -126,6 +129,7 @@ def animate(i):
 if __name__=='__main__':
     fig, ax = plt.subplots(1, 1)
 
+    # test size window
     ax.set_xlim([-10,10])
     ax.set_ylim([-10,10])
 
