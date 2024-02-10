@@ -28,10 +28,10 @@ def animate(i):
 
             states = states[:,np.where(color_preferences_indices < n_choices)][:,0,:]
 
-            strength_indices = color_preferences_strength.argsort()
-            color_preferences_strength = color_preferences_strength[strength_indices[::-1]]
-            color_preferences_indices = color_preferences_indices[strength_indices[::-1]]
-            states = states[:,strength_indices[::-1]]
+            strength_indices = color_preferences_strength.argsort()[::-1]
+            color_preferences_strength = color_preferences_strength[strength_indices]
+            color_preferences_indices = color_preferences_indices[strength_indices]
+            states = states[:,strength_indices]
 
             to_show = min(states.shape[1], 100)
             for i in range(to_show):
@@ -63,7 +63,6 @@ def init():
 
 if __name__=='__main__':
     fig, ax = plt.subplots(1, 2, gridspec_kw={'width_ratios':[10,1]})
-    j = 0 
 
     lines = []
 
