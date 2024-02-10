@@ -5,6 +5,7 @@ from reservoirpy.nodes import Reservoir, Input, Ridge
 from reservoirpy.observables import spectral_radius
 import numpy as np
 import pickle
+from filelock import FileLock
 
 from sklearn.decomposition import PCA, IncrementalPCA
 
@@ -85,6 +86,9 @@ class ReservoirModel:
             if not os.path.exists("tmp/"):
                 os.makedirs("tmp/")
             np.save('tmp/states.npy', np.array(self.states))
+            
+            with FileLock("tmp/reservoir_states.npy.lock"):
+                np.save('tmp/reservoir_states.npy', self.reservoir.state())
             np.save('tmp/states_pca.npy', states_pca)
             np.save('tmp/nb_pressed_keys.npy', nb_pressed_keys)
             

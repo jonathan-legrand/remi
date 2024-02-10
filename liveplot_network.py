@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib.animation as animation
 import pickle
 import networkx as nx 
+from scipy.special import softmax
 
 def create_graph(sim_matrix, state, seed, title="reservoir"):
 
@@ -34,9 +35,11 @@ def create_graph(sim_matrix, state, seed, title="reservoir"):
         ax.plot([x0, x1], [y0, y1], color='black', linewidth=edge_width*0.5)
 
     #Add the nodes
-    sizes = (abs(state) * 50).astype(int)
-    scale_factor = 20
-    ax.scatter(node_x, node_y, s=sizes[0]*scale_factor, c=[i for i in range(len(node_x))], cmap='turbo')
+    node_sizes = (abs(state) * 50).astype(int)
+    scale_factor = 300
+    # sizes = softmax(sizes[0])
+    node_sizes = softmax(node_sizes)
+    ax.scatter(node_x, node_y, s=node_sizes*scale_factor, c=[i for i in range(len(node_x))], cmap='turbo')
 
     # Update the layout
     # Update the layout
@@ -51,10 +54,10 @@ def animate(i):
     ax.clear()
     #states = np.load("tmp/states.npy", allow_pickle=True)
     try:
-        with open("tmp/states.npy", "rb") as f:
+        with open("tmp/reservoir_states.npy", "rb") as f:
             states = np.load(f, allow_pickle=True)
     except pickle.UnpicklingError:
-        with open("tmp/states.npy", "rb") as f:
+        with open("tmp/reservoir_states.npy", "rb") as f:
             states = np.load(f, allow_pickle=False)
             
     # load the "tmp/W_res.pkl" file with pickle
@@ -71,6 +74,6 @@ if __name__=='__main__':
     fig, ax = plt.subplots(1, 1)
 
     ani = animation.FuncAnimation(fig, animate, np.arange(1, 200),
-                            interval=100, blit=False)
+                            interval=200, blit=False)
     
     plt.show()
