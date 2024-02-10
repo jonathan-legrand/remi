@@ -87,6 +87,12 @@ class ReservoirModel:
             np.save('tmp/states.npy', np.array(self.states))
             np.save('tmp/states_pca.npy', states_pca)
             np.save('tmp/nb_pressed_keys.npy', nb_pressed_keys)
+            
+            # TODO Store only when neurons are updated
+            with open("tmp/W_res.pkl", "wb") as f:
+                pickle.dump(self.reservoir.W, f)
+
+            np.save('tmp/W_res', self.reservoir.W)
             np.save('tmp/pca_territories.npy', {
                 "xys":xys,
                 "pca_space_indices":pca_space_indices,
