@@ -9,7 +9,14 @@ import networkx as nx
 from scipy.special import softmax
 import time
 
-def create_graph(sim_matrix, state, seed, title="reservoir"):
+def create_graph(
+        sim_matrix,
+        state, 
+        seed, 
+        title="reservoir", 
+        scale_factor=500, 
+        edge_scaling=1
+    ):
 
     # Create a graph from the connectivity matrix
     G = nx.from_numpy_array(sim_matrix)
@@ -22,21 +29,23 @@ def create_graph(sim_matrix, state, seed, title="reservoir"):
     node_y = [pos[i][1] for i in G.nodes()]
 
     sim_matrix = sim_matrix.toarray()
-    thr = np.percentile(sim_matrix.flatten(), 95)
+    thr = np.percentile(sim_matrix.flatten(), 0)
     thr_sim_matrix = sim_matrix
     thr_sim_matrix[thr_sim_matrix < thr] = 0
+    thr_sim_matrix = softmax(thr_sim_matrix, axis=1)
     # Add the edges
     for edge in G.edges():
         x0, y0 = pos[edge[0]]
         x1, y1 = pos[edge[1]]
+        # TODO: handle negatives
         edge_width = abs(thr_sim_matrix[edge[0], edge[1]])
-        
-        
-        ax.plot([x0, x1], [y0, y1], color='black', linewidth=edge_width*0.5)
+        # TODO: bipolar cbar for negative/positive values
+        ax.plot([x0, x1], [y0, y1], color='black', linewidth=edge_width*edge_scaling)
+
 
     #Add the nodes
     node_sizes = (abs(state) * 50).astype(int)
-    scale_factor = 300
+    scale_factor = 500
     # sizes = softmax(sizes[0])
     node_sizes = softmax(node_sizes)
     ax.scatter(node_x, node_y, s=node_sizes*scale_factor, c=[i for i in range(len(node_x))], cmap='turbo')
@@ -74,7 +83,9 @@ def animate(i):
     return create_graph(
         W_res,
         states,
-        seed=1234
+        seed=1234,
+        scale_factor=500,
+        edge_scaling=1
     )
 
 if __name__=='__main__':
