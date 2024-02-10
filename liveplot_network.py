@@ -9,12 +9,15 @@ import networkx as nx
 from scipy.special import softmax
 import time
 
+# def sigmoid(x):
+#     return 1 / (1 + np.exp(-x))
+
 def create_graph(
         sim_matrix,
         state, 
         seed, 
         title="reservoir", 
-        scale_factor=500, 
+        scale_factor=25, 
         edge_scaling=1
     ):
 
@@ -25,15 +28,19 @@ def create_graph(
     pos = nx.spring_layout(G, k = 0.5, seed=seed,weight='weight', )
 
     # Create the nodes
-    node_x = [pos[i][0] for i in G.nodes()]
-    node_y = [pos[i][1] for i in G.nodes()]
-
+    # print(G.nodes())
+    stacked_pos = np.stack(tuple(pos.values()))
+    node_x = stacked_pos[:,0]
+    node_y = stacked_pos[:,1]
     sim_matrix = sim_matrix.toarray()
     thr = np.percentile(sim_matrix.flatten(), 0)
     thr_sim_matrix = sim_matrix
     thr_sim_matrix[thr_sim_matrix < thr] = 0
     thr_sim_matrix = softmax(thr_sim_matrix, axis=1)
     # Add the edges
+    indices_nodes = np.stack(G.edges())
+    # print(pos[indices_nodes[0]])
+    # TODO: optimisation by removing the loop (nightmare.com)
     for edge in G.edges():
         x0, y0 = pos[edge[0]]
         x1, y1 = pos[edge[1]]
@@ -44,11 +51,11 @@ def create_graph(
 
 
     #Add the nodes
-    node_sizes = (abs(state) * 50).astype(int)
-    scale_factor = 500
-    # sizes = softmax(sizes[0])
-    node_sizes = softmax(node_sizes)
-    ax.scatter(node_x, node_y, s=node_sizes*scale_factor, c=[i for i in range(len(node_x))], cmap='turbo')
+    # node_sizes = (abs(state) * 50).astype(int)
+    # displace values to avoid < 0 (tanh activation function)
+    node_sizes = (state + 1) * scale_factor
+    print(node_sizes)
+    ax.scatter(node_x, node_y, s=node_sizes, c=[i for i in range(len(node_x))], cmap='turbo')
 
     # Update the layout
     # Update the layout
@@ -65,8 +72,14 @@ def animate(i):
     try:
         with open("tmp/reservoir_states.npy", "rb") as f:
             states = np.load(f, allow_pickle=True)
-    except pickle.UnpicklingError:
+    except ValueError:
+        time.sleep(0.01)
         with open("tmp/reservoir_states.npy", "rb") as f:
+            states = np.load(f, allow_pickle=True)
+
+    except pickle.UnpicklingError as error:
+        with open("tmp/reservoir_states.npy", "rb") as f:
+            print(f' {error} EXCEPTION CATCHED!!!!!!!!!!!')
             states = np.load(f, allow_pickle=False)
             
     # load the "tmp/W_res.pkl" file with pickle
@@ -84,7 +97,7 @@ def animate(i):
         W_res,
         states,
         seed=1234,
-        scale_factor=500,
+        scale_factor=1000,
         edge_scaling=1
     )
 
