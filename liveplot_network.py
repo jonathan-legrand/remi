@@ -32,34 +32,53 @@ def create_graph(
     node_x = stacked_pos[:,0]
     node_y = stacked_pos[:,1]
     sim_matrix = sim_matrix.toarray()
+
     thr = np.percentile(sim_matrix.flatten(), 0)
     thr_sim_matrix = sim_matrix
     thr_sim_matrix[thr_sim_matrix < thr] = 0
-    thr_sim_matrix = softmax(thr_sim_matrix, axis=1)
+    # thr_sim_matrix = softmax(thr_sim_matrix, axis=1)
+    thr_sim_matrix = np.tanh(thr_sim_matrix)
     # Add the edges
     indices_nodes = np.stack(G.edges())
     # print(pos[indices_nodes[0]])
     # TODO: optimisation by removing the loop (nightmare.com)
+
     for edge in G.edges():
         x0, y0 = pos[edge[0]]
         x1, y1 = pos[edge[1]]
-        # TODO: handle negatives
+        is_positive = sim_matrix[edge[0], edge[1]] > 0
         edge_width = abs(thr_sim_matrix[edge[0], edge[1]])
+        if is_positive:
+            edge_type = "-"
+        elif edge_width == 0:
+            continue
+        else:
+            edge_type = ":"
+        
+        # TODO: handle negatives
+
         # TODO: bipolar cbar for negative/positive values
-        ax.plot([x0, x1], [y0, y1], color='black', linewidth=edge_width*edge_scaling)
+        ax.plot(
+            [x0, x1],
+            [y0, y1],
+            color="black",
+            linestyle=edge_type,
+            linewidth=edge_width*edge_scaling,
+            alpha=0.2
+        )
 
 
     #Add the nodes
     # displace values to avoid < 0 (tanh activation function)
     node_sizes = (state + 1) * scale_factor
     color = cm.hawaii(nodes_color/8)
-    print(color.shape)
-    print(len(node_x))
     ax.scatter(
         node_x,
         node_y,
         s=node_sizes,
-        c=color
+        c=color,
+        alpha=0.8,
+        edgecolors="lightgray"
         #c=[i for i in range(len(node_x))],
         #cmap='turbo'
     )
@@ -80,6 +99,7 @@ def animate(i):
             with open("tmp/reservoir_states.npy", "rb") as f:
                 states = np.load(f, allow_pickle=True)
         except ValueError:
+            # handling unable to reshape
             time.sleep(0.01)
             with open("tmp/reservoir_states.npy", "rb") as f:
                 states = np.load(f, allow_pickle=True)
