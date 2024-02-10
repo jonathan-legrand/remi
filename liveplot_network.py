@@ -7,12 +7,12 @@ import matplotlib.animation as animation
 import pickle
 import networkx as nx 
 from scipy.special import softmax
+import time
 
 def create_graph(sim_matrix, state, seed, title="reservoir"):
 
     # Create a graph from the connectivity matrix
     G = nx.from_numpy_array(sim_matrix)
-    seed=seed
     np.random.seed(seed)
     # Get the positions of the nodes
     pos = nx.spring_layout(G, k = 0.5, seed=seed,weight='weight', )
@@ -21,8 +21,8 @@ def create_graph(sim_matrix, state, seed, title="reservoir"):
     node_x = [pos[i][0] for i in G.nodes()]
     node_y = [pos[i][1] for i in G.nodes()]
 
-    
-    thr = np.percentile(sim_matrix, 50)
+    sim_matrix = sim_matrix.toarray()
+    thr = np.percentile(sim_matrix.flatten(), 95)
     thr_sim_matrix = sim_matrix
     thr_sim_matrix[thr_sim_matrix < thr] = 0
     # Add the edges
@@ -61,8 +61,15 @@ def animate(i):
             states = np.load(f, allow_pickle=False)
             
     # load the "tmp/W_res.pkl" file with pickle
-    with open("tmp/W_res.pkl", "rb") as f:
-        W_res = pickle.load(f)
+    try:
+        with open("tmp/W_res.pkl", "rb") as f:
+            W_res = pickle.load(f)
+    except EOFError:
+        time.sleep(0.01)
+        with open("tmp/W_res.pkl", "rb") as f:
+            W_res = pickle.load(f)
+
+        
 
     return create_graph(
         W_res,
