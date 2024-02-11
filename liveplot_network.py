@@ -145,7 +145,8 @@ def animate(i):
 if __name__=='__main__':
     fig, ax = plt.subplots(1, 1)
 
-    ani = animation.FuncAnimation(fig, animate, np.arange(1, 200),
-                            interval=50, blit=False)
+    ani = animation.FuncAnimation(
+        fig, animate, interval=50, blit=False, cache_frame_data=False
+    )
     
     plt.show()
