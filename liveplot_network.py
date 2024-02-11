@@ -55,7 +55,6 @@ def create_graph(
         else:
             edge_type = ":"
         
-        # TODO: handle negatives
 
         # TODO: bipolar cbar for negative/positive values
         ax.plot(
@@ -131,21 +130,6 @@ def animate(i):
             break
         else:
             print('INCONSISTENT SIZE; RELOADING')
-
-
-    # while len(W_res) != len(color_preferences_indices):
-    #     color_preferences_indices = np.load("tmp/color_preferences_indices.npy")
-    #     if len(W_res) == len(color_preferences_indices):
-    #         break
-    #     else:
-    #             # load the "tmp/W_res.pkl" file with pickle
-    # try:
-    #     with open("tmp/W_res.pkl", "rb") as f:
-    #         W_res = pickle.load(f)
-    # except EOFError:
-    #     time.sleep(0.01)
-    #     with open("tmp/W_res.pkl", "rb") as f:
-    #         W_res = pickle.load(f)
 
         
 
